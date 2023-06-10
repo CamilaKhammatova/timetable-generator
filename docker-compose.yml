@@ -1,0 +1,36 @@
+version: '3.3'
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    volumes:
+      - "db:/var/lib/postgresql/data/"
+    networks:
+      - kamila-network
+
+  app:
+    container_name: app-kamila
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: app-kamila:latest
+    profiles:
+      - application
+    environment:
+      MONGO_DB_URI: mongodb://mongo:27017/test?directConnection=true&serverSelectionTimeoutMS=2000&authSource=test
+    ports:
+      - 8080:8080
+    networks:
+      - kamila-network
+
+networks:
+  kamila-network:
+    driver: bridge
+
+volumes:
+  db:
